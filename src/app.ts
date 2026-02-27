@@ -1,6 +1,8 @@
 import express, { Application, Request, Response } from 'express';
-import { prisma } from './app/lib/prisma';
 import { IndexRoute } from './app/routes';
+import { globalErrorHandler } from './app/middleware/golbelErrorHandler';
+import { notFound } from './app/middleware/notFound';
+import cookieParser from 'cookie-parser';
 
 const app: Application = express();
 
@@ -9,6 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/api/v1', IndexRoute);
 
@@ -16,5 +19,8 @@ app.use('/api/v1', IndexRoute);
 app.get('/', async (req: Request, res: Response) => {
   res.send('health management server in running');
 });
+
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
